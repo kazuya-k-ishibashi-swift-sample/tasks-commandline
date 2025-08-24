@@ -12,6 +12,17 @@ func loadTasksFromFile() -> [Task] {
     }
 }
 
+func saveTasksToFile(_ tasks: [Task]) {
+    let jsonEncoder = JSONEncoder()
+    jsonEncoder.outputFormatting = [.prettyPrinted]
+    do {
+        let jsonData = try jsonEncoder.encode(tasks)
+        try jsonData.write(to: fileURL)
+    } catch {
+        print("エラー: \(error)")
+    }
+}
+
 let tasks = loadTasksFromFile()
 
 print("""
@@ -36,7 +47,30 @@ case "c":
         c... Create Task
         """)
 
-    // TODO: create task process
+    // create task process
+    print("title: ", terminator: "")
+    let newTaskTitleInput: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    print("deadline: ", terminator: "")
+    let newTaskDeadlineInput: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+    let formatter = ISO8601DateFormatter()
+    formatter.timeZone = TimeZone(identifier: "Asia/Tokyo")     // 日本時間（JST, +09:00）
+    formatter.formatOptions = [
+        .withInternetDateTime,      // "YYYY-MM-DDTHH:mm:ssZ"
+        .withFractionalSeconds      // ミリ秒まで出力
+    ]
+
+    let createdAt = Date()
+    let newTask = Task(
+        id: String(Int(createdAt.timeIntervalSince1970)),
+        title: newTaskTitleInput,
+        deadline: newTaskDeadlineInput,
+        isDone: false,
+        createdAt: formatter.string(from: createdAt)
+    )
+
+    let newTasks = tasks + [newTask]
+    saveTasksToFile(newTasks)
 
 default:
     exit(0)
