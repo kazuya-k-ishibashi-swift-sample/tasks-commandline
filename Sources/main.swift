@@ -1,28 +1,18 @@
 import Foundation
 
-let tasks = [
-    Task(
-        id: "001",
-        title: "タスクA",
-        deadline: "2025-08-02",
-        isDone: false,
-        createdAt: "2025-08-01T10:15:30.555+09:00"
-    ),
-    Task(
-        id: "002",
-        title: "タスクB",
-        deadline: "2025-08-03",
-        isDone: false,
-        createdAt: "2025-08-01T15:20:35.555+09:00"
-    ),
-    Task(
-        id: "003",
-        title: "タスクC",
-        deadline: "2025-08-04",
-        isDone: false,
-        createdAt: "2025-08-02T03:40:03.555+09:00"
-    )
-]
+let fileURL = URL(fileURLWithPath: "./Data/tasks.json")
+
+func loadTasksFromFile() -> [Task] {
+    do {
+        let jsonData = try Data(contentsOf: fileURL)
+        return try JSONDecoder().decode([Task].self, from: jsonData)
+    } catch {
+        print("エラー: \(error)")
+        return []
+    }
+}
+
+let tasks = loadTasksFromFile()
 
 print("""
 
