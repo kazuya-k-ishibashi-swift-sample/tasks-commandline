@@ -1,29 +1,11 @@
 import Foundation
 
-let fileURL = URL(fileURLWithPath: "./Data/tasks.json")
+let taskFactory = TaskFactory()
+let taskRepository = TaskRepository()
 
-func loadTasksFromFile() -> [Task] {
-    do {
-        let jsonData = try Data(contentsOf: fileURL)
-        return try JSONDecoder().decode([Task].self, from: jsonData)
-    } catch {
-        print("エラー: \(error)")
-        return []
-    }
-}
-
-func saveTasksToFile(_ tasks: [Task]) {
-    let jsonEncoder = JSONEncoder()
-    jsonEncoder.outputFormatting = [.prettyPrinted]
-    do {
-        let jsonData = try jsonEncoder.encode(tasks)
-        try jsonData.write(to: fileURL)
-    } catch {
-        print("エラー: \(error)")
-    }
-}
-
-let tasks = loadTasksFromFile()
+let tasks = try taskRepository.getAll().sorted(by: { task1, task2 throws in
+    task1.deadline < task2.deadline
+})
 
 print("""
 
@@ -53,24 +35,12 @@ case "c":
     print("deadline: ", terminator: "")
     let newTaskDeadlineInput: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
-    let formatter = ISO8601DateFormatter()
-    formatter.timeZone = TimeZone(identifier: "Asia/Tokyo")     // 日本時間（JST, +09:00）
-    formatter.formatOptions = [
-        .withInternetDateTime,      // "YYYY-MM-DDTHH:mm:ssZ"
-        .withFractionalSeconds      // ミリ秒まで出力
-    ]
-
-    let createdAt = Date()
-    let newTask = Task(
-        id: String(Int(createdAt.timeIntervalSince1970)),
+    let newTask = taskFactory.createNewTask(
         title: newTaskTitleInput,
-        deadline: newTaskDeadlineInput,
-        isDone: false,
-        createdAt: formatter.string(from: createdAt)
+        deadline: newTaskDeadlineInput
     )
 
-    let newTasks = tasks + [newTask]
-    saveTasksToFile(newTasks)
+    taskRepository.add(newTask)
 
 default:
     exit(0)
