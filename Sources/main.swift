@@ -2,6 +2,10 @@ import Foundation
 
 let taskFactory = TaskFactory()
 let taskRepository = TaskRepository()
+let createTaskUseCase = CreateTaskUseCase(
+    taskFactory: taskFactory,
+    taskRepository: taskRepository
+)
 
 let tasks = try taskRepository.getAll().sorted(by: { task1, task2 throws in
     task1.deadline < task2.deadline
@@ -28,19 +32,7 @@ case "c":
     print("""
         c... Create Task
         """)
-
-    // create task process
-    print("title: ", terminator: "")
-    let newTaskTitleInput: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-    print("deadline: ", terminator: "")
-    let newTaskDeadlineInput: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-    let newTask = taskFactory.createNewTask(
-        title: newTaskTitleInput,
-        deadline: newTaskDeadlineInput
-    )
-
-    taskRepository.add(newTask)
+    createTaskUseCase()
 
 default:
     exit(0)
