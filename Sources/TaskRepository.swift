@@ -46,4 +46,10 @@ class TaskRepository {
         let newTasks = tasks + [newTask]
         saveTasksToFile(newTasks)
     }
+
+    func delete(id: String) {
+        let tasks = loadTasksFromFile()
+        let deletedTasks = tasks.filter({ task in task.id != id })
+        saveTasksToFile(deletedTasks)
+    }
 }
