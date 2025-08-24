@@ -6,6 +6,9 @@ let createTaskUseCase = CreateTaskUseCase(
     taskFactory: taskFactory,
     taskRepository: taskRepository
 )
+let deleteTaskUseCase = DeleteTaskUseCase(
+    taskRepository: taskRepository
+)
 
 let tasks = try taskRepository.getAll().sorted(by: { task1, task2 throws in
     task1.deadline < task2.deadline
@@ -22,7 +25,7 @@ print("""
 
 print("""
     Operation:
-        [C]reate
+        [C]reate / [D]elete
     """)
 print("> ", terminator: "")
 let input: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -33,6 +36,12 @@ case "c":
         c... Create Task
         """)
     createTaskUseCase()
+
+case "d":
+    print("""
+        d... Delete Task
+        """)
+    deleteTaskUseCase()
 
 default:
     exit(0)
