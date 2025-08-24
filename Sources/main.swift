@@ -20,4 +20,24 @@ print("""
     \(tasks.enumerated().map { index, task -> String in
         "\(String(format: "%2d", index + 1)). [\(task.isDone ? "x" : " ")] \(task.title)（期限：\(task.deadline)）"
     }.joined(separator: "\n"))
+
     """)
+
+print("""
+    Operation:
+        [C]reate
+    """)
+print("> ", terminator: "")
+let input: String = readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+switch input.prefix(1).lowercased() {
+case "c":
+    print("""
+        c... Create Task
+        """)
+
+    // TODO: create task process
+
+default:
+    exit(0)
+}
